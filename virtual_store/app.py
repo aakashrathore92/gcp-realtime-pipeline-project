@@ -1,4 +1,5 @@
 import dash
+from publish_data import pushData
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
@@ -298,6 +299,8 @@ def update(input_clicks, prod_1_qty, prod_2_qty, prod_3_qty, prod_4_qty, prod_5_
                 "========================================================================\n"
             )
             print(order)
+            orderencoded = str.encode(f"""{order}""")
+            pushData(orderencoded)
             print(
                 "========================================================================\n\n"
             )

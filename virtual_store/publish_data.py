@@ -1,19 +1,18 @@
-import os
-import time
+import os, json, time
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
-pubsub_topic = "projects/hadooptest-223316/topics/virtualStore"
-
-
+##
+# Function called by our virtual store application
+# to push data in pub/sub Topic
+##
 def pushData(eventData):
+    # Replace with your projectid
     projectid = "hadooptest-223316"
     # Replace  with your pubsub topic
     pubsub_topic = "projects/hadooptest-223316/topics/virtualStore"
-
     # Replace with your service account path
     service_account_path = "/home/aakash/credentials/pubsubtest.json"
-
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_path
 
     publisher = pubsub_v1.PublisherClient.from_service_account_file(
@@ -24,6 +23,48 @@ def pushData(eventData):
 
 
 if __name__ == "__main__":
-    testdata = """{"event_name":"eMenu_order_item","data":{"category_id":23371,"created_at":{"_seconds":1594214749,"_nanoseconds":222000000},"customer_id":563391,"customization_view":null,"is_personalized":0,"item_id":351950,"item_name":"Cream of Mushroom Soup","item_price":5.15,"item_qty":1,"item_sequence":1,"item_sku_id":436650,"item_sku_name":"Regular","item_type":"I","menu_mode":"Web","merchant_key":"5eb90f3b10728","parent_item_id":null,"parent_item_price":null,"parent_item_qty":null,"parent_item_sku_id":null,"paxT":2,"pos_order_id":"226596810","selection_group_id":null,"session_id":"845108072020130739","special_request":"","sub_category_id":39721,"table_no":"6","tabs_order_id":"226596810","timestamp":"2020-07-08T13:25:49.093Z"}}"""
-    testdata = str.encode(testdata)
+    testdata = str(
+        {
+            "order_id": "84c538fa-ef6f-11ea-a9c3-3db3abcedca9",
+            "timestamp": 1599307283.61477,
+            "ordered_item": [
+                {
+                    "item_name": "Sample Product Trolly",
+                    "item_id": "1001",
+                    "category_name": "sample category 1",
+                    "item_price": 189.99,
+                    "item_qty": 1,
+                },
+                {
+                    "item_name": "Sample Product Mystery Box",
+                    "item_id": "1002",
+                    "category_name": "sample category 2",
+                    "item_price": 47.0,
+                    "item_qty": 3,
+                },
+                {
+                    "item_name": "Sample Product Gift Bag",
+                    "item_id": "1003",
+                    "category_name": "sample category 3",
+                    "item_price": 23.19,
+                    "item_qty": 5,
+                },
+                {
+                    "item_name": "Sample Product Small Block",
+                    "item_id": "1004",
+                    "category_name": "sample category 4",
+                    "item_price": 44.99,
+                    "item_qty": 1,
+                },
+                {
+                    "item_name": "Sample Product Cardboard Box",
+                    "item_id": "1005",
+                    "category_name": "sample category 5",
+                    "item_price": 64.59,
+                    "item_qty": 5,
+                },
+            ],
+        }
+    )
+    testdata = json.dumps(testdata).encode("utf-8")
     pushData(testdata)
