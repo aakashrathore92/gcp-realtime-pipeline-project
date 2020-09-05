@@ -23,6 +23,8 @@ path_args, pipeline_args = parser.parse_known_args()
 # single record
 ##
 def mainProcess(element):
+    import ast
+
     # converting bytes into string
     dataDic = json.loads(element.decode("utf-8"))
     # converting string representation of Dictionary to Dictionary Obj
@@ -48,10 +50,12 @@ def run_main(path_arguments, pipeline_arguments):
         >> beam.io.ReadFromPubSub(subscription=INPUT_SUBSCRIPTION)
         | "Stripping newline character" >> beam.Map(lambda data: data.rstrip().lstrip())
         | "Applying our main unnesting function" >> beam.FlatMap(mainProcess)
-        | "Writing final data to production db"
-        >> relational_db.Write(
-            source_config=SOURCE_CONFIG_PROD, table_config=TABLE_CONFIG
-        )
+    )
+
+    main_pipeline | "Printing for debugging" >> beam.Map(print)
+
+    main_pipeline | "Writing final data to production db" >> relational_db.Write(
+        source_config=SOURCE_CONFIG_PROD, table_config=TABLE_CONFIG
     )
 
     result = p.run()
